@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Beer-Lambert Law Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Beer-Lambert Law Calculator</h1>
+  <form>
+    <label for="wavelength">Wavelength (nm):</label>
+    <input type="number" id="wavelength" value="555" step="1">
+    
+    <label for="extinction_coefficient">Extinction Coefficient (k):</label>
+    <input type="number" id="extinction_coefficient" value="5.021" step="0.001">
+    
+    <label for="absorption_coefficient">Absorption Coefficient (cm<sup>-1</sup>):</label>
+    <input type="number" id="absorption_coefficient" step="0.001">
+    
+    <label for="film_thickness">Film Thickness (nm):</label>
+    <input type="number" id="film_thickness" value="0" step="0.1">
+    
+    <button type="button" onclick="calculate()">Calculate</button>
+    <p id="result"></p>
+  </form>
+
+  <script>
+    function calculate() {
+      const wavelength = parseFloat(document.getElementById("wavelength").value);
+      const k = parseFloat(document.getElementById("extinction_coefficient").value);
+      const alphaInput = document.getElementById("absorption_coefficient");
+      const film_thickness = parseFloat(document.getElementById("film_thickness").value);
+
+      let alpha = parseFloat(alphaInput.value);
+
+      // Calculate alpha if not provided
+      if (isNaN(alpha)) {
+        alpha = (4 * Math.PI * k) / (wavelength * 1e-7); // Convert nm to cm
+        alphaInput.value = alpha.toFixed(3);
+      }
+
+      // Calculate k if not provided
+      if (isNaN(k)) {
+        const kCalculated = (alpha * wavelength * 1e-7) / (4 * Math.PI);
+        document.getElementById("extinction_coefficient").value = kCalculated.toFixed(3);
+      }
+
+      // Convert film thickness from nm to cm
+      const film_thickness_cm = film_thickness * 1e-7;
+
+      // Calculate transmission
+      const transmission = Math.exp(-alpha * film_thickness_cm) * 100; // Convert to percentage
+      document.getElementById("result").innerHTML = `The transmission is: ${transmission.toFixed(2)}%`;
+    }
+  </script>
+</body>
+</html>
